@@ -1,6 +1,7 @@
 package com.oop.intelimenus.interfaces;
 
 import com.oop.intelimenus.interfaces.actionable.Actionable;
+import com.oop.intelimenus.interfaces.attribute.AttributeHolder;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -10,11 +11,18 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-public interface Menu<T extends Menu> extends InventoryHolder, Actionable<Menu> {
+import java.util.function.Consumer;
+
+public interface Menu<M extends Menu, S extends MenuSlot, B extends MenuButton> extends InventoryHolder, Actionable<Menu>, Comparable<Menu>, AttributeHolder<M> {
     /*
     Get viewer of the menu
     */
     Player getViewer();
+
+    /*
+    Get slots of menu
+    */
+    S[] getSlots();
 
     /*
     Get current inventory data
@@ -64,10 +72,23 @@ public interface Menu<T extends Menu> extends InventoryHolder, Actionable<Menu> 
     /*
     Set menu slot
     */
-    T setSlot(MenuSlot slot);
+    M setSlot(S slot);
 
     /*
     Set menu slot to button
     */
-    T setSlot(int slot, MenuButton button);
+    M setSlot(int slot, B button);
+
+    /*
+    Edit slots from starting slot and ending
+    */
+    default M applyToSlots(int start, int end, @NonNull Consumer<S> consumer) {
+        for (int slot = start; slot < end; slot++) {
+            if (getSlots().length < slot) break;
+            S menuSlot = getSlots()[slot];
+            consumer.accept(menuSlot);
+        }
+
+        return (M) this;
+    }
 }

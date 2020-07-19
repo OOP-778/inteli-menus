@@ -7,27 +7,25 @@ import com.oop.intelimenus.interfaces.attribute.Attribute;
 import io.netty.util.internal.ConcurrentSet;
 import org.bukkit.inventory.ItemStack;
 
-import java.awt.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-public class IButton implements MenuButton {
+public class IButton implements MenuButton<IButton> {
 
     private ItemStack currentItem;
     private Consumer<ButtonClickEvent> onClick;
     private Map<String, MenuItemBuilder> states = new HashMap<>();
     private Set<Attribute> attributeSet = new ConcurrentSet<>();
+    private Map<String, Object> dataMap = new ConcurrentHashMap<>();
 
     @Override
-    public ItemStack getCurrentItem() {
-        return currentItem;
+    public Optional<ItemStack> getCurrentItem() {
+        return Optional.ofNullable(currentItem);
     }
 
     @Override
-    public MenuButton onClick(Consumer<ButtonClickEvent> event) {
+    public IButton onClick(Consumer<ButtonClickEvent> event) {
         this.onClick = event;
         return this;
     }
@@ -40,5 +38,23 @@ public class IButton implements MenuButton {
     @Override
     public Collection<Attribute> getAttributes() {
         return attributeSet;
+    }
+
+    @Override
+    public Map<String, Object> getDataMap() {
+        return dataMap;
+    }
+
+    @Override
+    public IButton clone() {
+        IButton button = new IButton();
+        button.currentItem = currentItem.clone();
+        button.onClick = onClick;
+
+        states.forEach((key, state) -> button.states.put(key, state.clone()));
+        button.attributeSet.addAll(attributeSet);
+        button.dataMap.putAll(dataMap);
+
+        return button;
     }
 }

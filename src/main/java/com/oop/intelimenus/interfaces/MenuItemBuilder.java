@@ -1,6 +1,5 @@
 package com.oop.intelimenus.interfaces;
 
-import com.oop.intelimenus.InteliMenus;
 import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;
 
@@ -9,7 +8,7 @@ import java.util.function.Function;
 
 import static com.oop.intelimenus.InteliMenus.getInteliMenus;
 
-public interface MenuItemBuilder<T extends MenuItemBuilder> {
+public interface MenuItemBuilder<T extends MenuItemBuilder> extends Cloneable {
     /*
     Returns item
     */
@@ -41,6 +40,8 @@ public interface MenuItemBuilder<T extends MenuItemBuilder> {
     Set display name of the item
     */
     T displayName(String newDisplayName);
+
+    T clone();
 
     static MenuItemBuilder of(@NonNull ItemStack item) {
         return getInteliMenus().getMenuItemBuilderFunction().apply(item);

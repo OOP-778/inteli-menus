@@ -53,13 +53,36 @@ public class Attributes {
         }
     };
 
+    public static final Attribute REBUILD_ON_OPEN = new Attribute() {
+        @Override
+        public String getId() {
+            return "rebuildOnOpen";
+        }
+
+        @Override
+        public boolean applyableToMenus() {
+            return true;
+        }
+
+        @Override
+        public boolean applyableToSlots() {
+            return false;
+        }
+
+        @Override
+        public boolean applyableToButtons() {
+            return false;
+        }
+    };
+
     private static final Map<String, Attribute> byName =
             new LimitedMutableMap<>(new ConcurrentHashMap<>(), false, true);
 
     static {
         Arrays.asList(
                 ACCEPTS_ITEM,
-                FILLER
+                FILLER,
+                REBUILD_ON_OPEN
         ).forEach(Attributes::register);
     }
 

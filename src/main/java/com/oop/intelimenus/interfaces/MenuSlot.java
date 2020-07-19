@@ -4,11 +4,11 @@ import com.oop.intelimenus.interfaces.attribute.AttributeHolder;
 
 import java.util.Optional;
 
-public interface MenuSlot extends AttributeHolder {
+public interface MenuSlot<T extends MenuSlot, B extends MenuButton> extends AttributeHolder<T>, DataHolder<T> {
     /*
     Button that holds this slot
     */
-    Optional<MenuButton> getHolder();
+    Optional<B> getHolder();
 
     /*
     Slot of the inventory
@@ -18,7 +18,7 @@ public interface MenuSlot extends AttributeHolder {
     /*
     Set slot holder
     */
-    void setHolder(MenuButton button);
+    void setHolder(B button);
 
     /*
     Set slot index

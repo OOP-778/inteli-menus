@@ -4,34 +4,37 @@ import com.google.common.base.Preconditions;
 import com.oop.intelimenus.interfaces.MenuButton;
 import com.oop.intelimenus.interfaces.MenuSlot;
 import com.oop.intelimenus.interfaces.attribute.Attribute;
+import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class ISlot implements MenuSlot {
-
+public class ISlot implements MenuSlot<ISlot, IButton> {
     @Getter
     @Setter
     private int index;
 
+    @Getter
+    private IButton holder;
+
+    @Getter
+    private Map<String, Object> dataMap = new ConcurrentHashMap<>();
+
+    @Getter
+    private Set<Attribute> attributes = new ConcurrentSet<>();
+
     @Override
-    public Optional<MenuButton> getHolder() {
+    public Optional<IButton> getHolder() {
         return Optional.empty();
     }
 
     @Override
-    public void setHolder(MenuButton button) {
-
-    }
-
-    @Override
-    public Collection<Attribute> getAttributes() {
-        return null;
+    public void setHolder(IButton button) {
+        this.holder = button;
     }
 
     public static SlotBuilder builder() {
@@ -42,12 +45,13 @@ public class ISlot implements MenuSlot {
     public static class SlotBuilder {
 
         @Setter
-        private MenuButton holder;
+        private IButton holder;
 
         @Setter
         private int index;
 
         private Set<Attribute> attributes = new HashSet<>();
+        private Map<String, Object> dataMap = new ConcurrentHashMap<>();
 
         private SlotBuilder() {}
 
@@ -57,11 +61,17 @@ public class ISlot implements MenuSlot {
             return this;
         }
 
+        public SlotBuilder addData(@NonNull String key, @NonNull Object value) {
+            dataMap.put(key, value);
+            return this;
+        }
+
         public ISlot build() {
             ISlot slot = new ISlot();
             slot.getAttributes().addAll(attributes);
             slot.setHolder(holder);
             slot.setIndex(index);
+            slot.dataMap = dataMap;
             return slot;
         }
     }

@@ -42,6 +42,7 @@ public interface Actionable<T extends Actionable> extends Openable<T>, Moveable<
                 if (callback != null)
                     callback.run();
             });
+
         } else if (action == MenuAction.MOVE) {
             Preconditions.checkArgument(getCurrentMoving().isPresent(), "Moving object is not set!");
             open(getCurrentMoving().get(), () -> {
@@ -50,6 +51,7 @@ public interface Actionable<T extends Actionable> extends Openable<T>, Moveable<
                 if (callback != null)
                     callback.run();
             });
+
         } else if (action == MenuAction.CLOSE) {
             getInteliMenus().getUtil().ensureSync(() -> {
                 getViewer().closeInventory();
@@ -57,13 +59,14 @@ public interface Actionable<T extends Actionable> extends Openable<T>, Moveable<
                 if (callback != null)
                     callback.run();
             });
+
         } else if (action == MenuAction.RETURN) {
-            if (getParent() == null) {
+            if (!getParent().isPresent()) {
                 setCurrentAction(MenuAction.NONE);
                 return;
             }
 
-            open(getParent(), () -> {
+            open(getParent().get(), () -> {
                 setCurrentAction(MenuAction.NONE);
                 if (callback != null)
                     callback.run();
