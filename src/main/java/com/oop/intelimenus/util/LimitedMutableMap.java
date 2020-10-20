@@ -37,7 +37,7 @@ public class LimitedMutableMap<K, V> implements Map<K, V> {
 
     @Override
     public V get(Object key) {
-        return null;
+        return map.get(key);
     }
 
     @Override

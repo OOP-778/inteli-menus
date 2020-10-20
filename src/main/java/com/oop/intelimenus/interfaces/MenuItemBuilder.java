@@ -3,6 +3,7 @@ package com.oop.intelimenus.interfaces;
 import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
@@ -37,6 +38,16 @@ public interface MenuItemBuilder<T extends MenuItemBuilder> extends Cloneable {
     T lore(List<String> newLore);
 
     /*
+    Append single line to lore
+    */
+    T appendLore(String line);
+
+    /*
+    Append coll of lines to lore
+    */
+    T appendLore(Collection<String> lines);
+
+    /*
     Set display name of the item
     */
     T displayName(String newDisplayName);
@@ -44,6 +55,6 @@ public interface MenuItemBuilder<T extends MenuItemBuilder> extends Cloneable {
     T clone();
 
     static MenuItemBuilder of(@NonNull ItemStack item) {
-        return getInteliMenus().getMenuItemBuilderFunction().apply(item);
+        return getInteliMenus().getMenuItemBuilderFunction().apply(item.clone());
     }
 }

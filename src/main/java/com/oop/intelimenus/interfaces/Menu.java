@@ -1,7 +1,11 @@
 package com.oop.intelimenus.interfaces;
 
-import com.oop.intelimenus.interfaces.actionable.Actionable;
-import com.oop.intelimenus.interfaces.attribute.AttributeHolder;
+import com.google.common.base.Preconditions;
+import com.oop.intelimenus.actionable.Actionable;
+import com.oop.intelimenus.component.ComponentHolder;
+import com.oop.intelimenus.slot.ISlot;
+import com.oop.intelimenus.placholder.PlaceholderComponent;
+import com.oop.intelimenus.button.state.StateRequestComponent;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -10,14 +14,17 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
-public interface Menu<M extends Menu, S extends MenuSlot, B extends MenuButton> extends InventoryHolder, Actionable<Menu>, Comparable<Menu>, AttributeHolder<M> {
+public interface Menu<M extends Menu, S extends MenuSlot, B extends MenuButton> extends InventoryHolder, Actionable<Menu>, Comparable<Menu>, ComponentHolder<M> {
+
     /*
     Get viewer of the menu
     */
-    Player getViewer();
+    Optional<Player> getViewer();
 
     /*
     Get slots of menu
@@ -28,11 +35,6 @@ public interface Menu<M extends Menu, S extends MenuSlot, B extends MenuButton> 
     Get current inventory data
     */
     InventoryData getInventoryData();
-
-    /*
-    Set current inventory data
-    */
-    InventoryData setInventoryData(@NonNull InventoryData data);
 
     /*
     When menu gets clicked
@@ -53,6 +55,11 @@ public interface Menu<M extends Menu, S extends MenuSlot, B extends MenuButton> 
     When menu gets open
     */
     void onOpen(InventoryOpenEvent event);
+
+    /*
+    When player clicks bottom inventory
+    */
+    void onBottomClick(InventoryClickEvent event);
 
     /*
     Build the menu
@@ -91,4 +98,35 @@ public interface Menu<M extends Menu, S extends MenuSlot, B extends MenuButton> 
 
         return (M) this;
     }
+
+    /*
+    Requests an itemstack from slot
+    */
+    default Optional<MenuItemBuilder> requestItem(int slot) {
+        Preconditions.checkArgument(slot < getSlots().length, "Cannot request an item at an invalid slot! (" + slot + "/" + getSlots().length + ")");
+
+        final S slotObj = getSlots()[slot];
+        final B button = (B) getSlots()[slot].getHolder().orElse(null);
+        final MenuItemBuilder[] builder = {null};
+
+        // Request an state if component there
+        getComponent(StateRequestComponent.class)
+                .map(c -> c.find((ISlot) slotObj))
+                .ifPresent(f -> builder[0] = f.apply((ISlot) slotObj).clone());
+
+        if (builder[0] == null && button != null && button.getCurrentItem().isPresent())
+            builder[0] = MenuItemBuilder
+                    .of((ItemStack) button.getCurrentItem().get());
+
+        // Replace with placeholders if component there
+        getComponent(PlaceholderComponent.class)
+                .ifPresent(c -> c.getPlaceholders().forEach(builder[0]::replace));
+
+        return Optional.ofNullable(builder[0]);
+    }
+
+    /*
+    Clone menu
+    */
+    M clone();
 }

@@ -1,0 +1,35 @@
+{
+  "title": "&cTest Title",
+  "layout": [
+    "X X X X X X X X X",
+    "X X X X X X X X X"
+  ],
+  "actions": [
+    {
+      "key": "H",
+      "type": "sound",
+      "value": "CHEST_OPEN"
+    }
+  ],
+  "buttons": [
+    {
+      "key": "H",
+      "shown": {
+        "material": "player head",
+        "display name": "&cTest",
+        "lore": [
+          "&cBruh"
+        ],
+        "glow": true
+      },
+      "hidden": {
+        "material": "player head",
+        "display name": "&cTest",
+        "lore": [
+          "&cBruh"
+        ],
+        "glow": true
+      }
+    }
+  ]
+}

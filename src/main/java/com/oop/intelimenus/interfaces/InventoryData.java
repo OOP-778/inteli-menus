@@ -1,6 +1,7 @@
 package com.oop.intelimenus.interfaces;
 
 import lombok.NonNull;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 public interface InventoryData {
@@ -10,5 +11,7 @@ public interface InventoryData {
 
     void updateTitle(String newTitle);
 
-    void updateSlot(int slot);
+    void updateSlots(int ...slots);
+
+    Player getViewer();
 }
